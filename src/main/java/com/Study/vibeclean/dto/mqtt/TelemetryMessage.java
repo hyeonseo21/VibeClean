@@ -27,19 +27,19 @@ public class TelemetryMessage {
 
     @Data
     public static class SensorData {
-        private double x;
-        private double y;
-        private double z;
+        private float x;
+        private float y;
+        private float z;
 
-        public double getX() {
+        public float getX() {
             return x;
         }
 
-        public double getY() {
+        public float getY() {
             return y;
         }
 
-        public double getZ() {
+        public float getZ() {
             return z;
         }
     }

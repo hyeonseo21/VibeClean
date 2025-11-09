@@ -1,6 +1,8 @@
 package com.Study.vibeclean.dto.service.mqtt;
 
 import com.Study.vibeclean.domain.status.Status;
+import com.Study.vibeclean.dto.repository.manual.ManualPowerRepository;
+import com.Study.vibeclean.dto.repository.manual.ManualSpeedRepository;
 import com.Study.vibeclean.dto.repository.sensor.SensorRepository;
 import com.Study.vibeclean.dto.repository.status.StatusRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,19 +20,28 @@ import java.time.LocalDateTime;
 public class RobotOfflineChecker {
     private final StatusRepository statusRepository;
     private final SensorRepository sensorRepository;
+    private final ManualSpeedRepository manualSpeedRepository;
+    private final ManualPowerRepository manualPowerRepository;
 
     @Scheduled(fixedDelay = 1000) // 이거를 스프링부트가 1초마다 반복 실행되게 만든다.
     public void checkOffline() {
         Status latest = statusRepository.findTopByOrderByTimeDesc();
         if (latest == null) {
+            statusRepository.deleteAll();
+            sensorRepository.deleteAll();// 꺼졌다고 판단하여 로그에 출력 및 db에 저장된 모든 값들을 삭제한다.
+            manualPowerRepository.deleteAll();
+            manualSpeedRepository.deleteAll();
             return; // 이미 초기 상태
         }
 
         LocalDateTime now = LocalDateTime.now();
-        if (latest.getTime().isBefore(now.minusSeconds(3))) { // 가장 최근에 status에 저장된 시간과 현재 시간이 3초가 넘으면 일어나는 일
+        if (latest.getTime().isBefore(now.minusSeconds(59))) { // 가장 최근에 status에 저장된 시간과 현재 시간이 3초가 넘으면 일어나는 일
+            // 지금은 테스트 단계라서 59초로 설정했지만, 실제로 할 때는 3초나 더 간격 작게 해서 고고링
             log.info("No telemetry for 3s → Robot OFF → clear tables");
             statusRepository.deleteAll();
             sensorRepository.deleteAll();// 꺼졌다고 판단하여 로그에 출력 및 db에 저장된 모든 값들을 삭제한다.
+            manualPowerRepository.deleteAll();
+            manualSpeedRepository.deleteAll();
         }
     }
 }

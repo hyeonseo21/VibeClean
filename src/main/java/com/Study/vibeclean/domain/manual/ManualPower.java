@@ -12,7 +12,11 @@ public class ManualPower {
     @Column(nullable = false, name="power")
     private String power;
 
+    protected ManualPower(){}
+
     public ManualPower(String power) {
         this.power = power;
     }
+
+
 }

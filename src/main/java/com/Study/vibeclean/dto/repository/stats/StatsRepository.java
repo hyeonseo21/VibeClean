@@ -11,4 +11,8 @@ public interface StatsRepository extends JpaRepository<Status,Long> {
     @Query("SELECT s.currentFloor FROM Status s")
     List<Stats> findAllByCurrentFloor();
 
+    Status findTopByOrderByTimeDesc();
+    Status findTopByOrderByTimeAsc();
+
+
 }

@@ -8,6 +8,7 @@ import com.Study.vibeclean.dto.status.response.RobotStatusResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,10 +33,13 @@ public class StatusService {
 
     @Transactional // 이 부분 짜는 거에서 살짝 막혔었다. postman을 활용해서 get으로 들어오면 아래의 상태 정보를 보내줌
     public RobotStatusResponse returnStatus(){
-        Status latestStatus= repository.findTopByOrderByIdDesc().orElseThrow(()->new IllegalArgumentException("저장된 좌표 값이 존재하지 않습니다. ")); //가장 최신의 값을 가져옴.
+        Optional<Status> latestStatus= repository.findTopByOrderByIdDesc();//가장 최신의 값을 가져옴.
+        if (latestStatus.isEmpty()){
+            return new RobotStatusResponse("OFF",null,0,new ArrayList<>());
+        }
         List<Coordinate> path= repository.findAllPathPoints();
 
-        return new RobotStatusResponse(latestStatus.getPower(),latestStatus.getCurrentFloor(),latestStatus.getFanSpeed(),path);
+        return new RobotStatusResponse(latestStatus.get().getPower(), latestStatus.get().getCurrentFloor(), latestStatus.get().getFanSpeed(),path);
     }
 
 }

@@ -11,6 +11,8 @@ public class ManualSpeed {
     @Column(nullable = false, name="speed")
     private int speed;
 
+    protected ManualSpeed(){}
+
     public ManualSpeed(int speed) {
         this.speed = speed;
     }
