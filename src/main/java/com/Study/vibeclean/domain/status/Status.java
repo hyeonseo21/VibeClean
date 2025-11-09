@@ -52,5 +52,7 @@ public class Status {
         return fanSpeed;
     }
 
-
+    public LocalDateTime getTime() {
+        return time;
+    }
 }
