@@ -1,13 +1,13 @@
 package com.Study.vibeclean.dto.manual.request;
 
 public class ManualSpeedRequest {
-    private int speed;
+    private int fanSpeed;
 
-    public ManualSpeedRequest(int speed) {
-        this.speed = speed;
+    public ManualSpeedRequest(int fanSpeed) {
+        this.fanSpeed = fanSpeed;
     }
 
-    public int getSpeed() {
-        return speed;
+    public int getFanSpeed() {
+        return fanSpeed;
     }
 }
