@@ -23,7 +23,7 @@ public class RobotOfflineChecker {
     private final ManualSpeedRepository manualSpeedRepository;
     private final ManualPowerRepository manualPowerRepository;
 
-    @Scheduled(fixedDelay = 1000) // 이거를 스프링부트가 1초마다 반복 실행되게 만든다.
+    @Scheduled(fixedDelay = 1000) // 이거를 통해 스프링부트가 1초마다 반복 실행되게 만든다.
     public void checkOffline() {
         Status latest = statusRepository.findTopByOrderByTimeDesc();
         if (latest == null) {
