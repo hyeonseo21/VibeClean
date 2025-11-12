@@ -23,8 +23,9 @@
 #define MQTT_CLIENT_ID  "vibeclean-client(STM)" // mqtt에 접속할 클라이언트 이름
 /* ==================================== */
 
-static uint8_t rxBuf[512];
+static uint8_t rxBuf[512]={0};
 //UART로부터 받은 데이터 임시 저장용 버퍼
+//for subscirbe된 값 처리
 
 /* publish한 수동 조작 상태 subscribe해서 담는 변수. 로봇 상태 (제어 명령 결과를 반영하는 전역 상태) */
 static int g_powerOn  = 1; // 수동 조작으로 모드를 조절하는 애다. 이 값이 1이면 on 값이 들어온 거고 이 값이 0이면 off가 들어온 거다.
@@ -40,6 +41,7 @@ static int g_fanSpeed = 1;// 수동 조작으로 팬 속도를 조절하는 애�
  */
 static HAL_StatusTypeDef ESP_Send(const char *cmd) // 이 인자에는 "AT\r\n" 등 wifi모듈 설정 위한 AT 명령어 문자열 들어감
 {
+
     return HAL_UART_Transmit(ESP_UART, (uint8_t*)cmd, strlen(cmd), 1000);
     // 인자로 받은 문자열을 UART로 그대로 내보냄.
     // 맨 마지막 매개변수는 타임아웃을 의미함.
@@ -49,6 +51,7 @@ static HAL_StatusTypeDef ESP_Send(const char *cmd) // 이 인자에는 "AT\r\n" 
 
 /**
  * 정해진 시간 안에 ESP가 OK라고 답했는지 확인하는 함수
+ * 맨 처음에 초기화 진행하면서, 이거를 확인하고 그 다음 명령이 가게 해야 명령이 씹히는 걸 막을 수 있다.
  * @brief target 문자열이 나올 때까지 UART 수신 대기
  * @param target   찾을 문자열 (예: "OK", "WIFI GOT IP")
  * @param timeout  전체 대기 시간(ms)
@@ -56,19 +59,20 @@ static HAL_StatusTypeDef ESP_Send(const char *cmd) // 이 인자에는 "AT\r\n" 
  */
 static int ESP_WaitFor(const char *target, uint32_t timeout)
 {
+	char waitBuf[256] = {0};
     uint32_t start = HAL_GetTick(); // 시작 시간 기록
     uint16_t idx = 0;
-    memset(rxBuf, 0, sizeof(rxBuf)); //임시 저장용 버퍼 초기화
+    //memset(waitBuf, 0, sizeof(waitBuf)); //임시 저장용 버퍼 초기화
 
-    while ((HAL_GetTick() - start) < timeout && idx < sizeof(rxBuf) - 1)
+    while ((HAL_GetTick() - start) < timeout && idx < sizeof(waitBuf) - 1)
     { // 전체 경과 시간이 timeout보다 작고, 버퍼가 가득차기 전까지 반복됨
         uint8_t ch;
         if (HAL_UART_Receive(ESP_UART, &ch, 1, 20) == HAL_OK)
         { //wifi에게 받는 값은 1바이씩 UART 수신받는데, 최대 20초까지 대기하고 성공 시 ch에 값 넣음
-            rxBuf[idx++] = ch;
-            rxBuf[idx] = '\0';
+            waitBuf[idx++] = ch;
+            waitBuf[idx] = '\0';
 
-            if (strstr((char*)rxBuf, target) != NULL)
+            if (strstr((char*)waitBuf, target) != NULL)
             	// 지금까지 받은 문자열 안에 target이 포함되면 1 즉 성공
             {
                 return 1;
@@ -187,6 +191,8 @@ void MQTT_ProcessIncoming(void)
 	    }
 
 	/* 1) UART에서 들어온 데이터 rxBuf에 누적 */
+	// 실제로는 while내부에서 빠르게 들어오기 때문에 한 번에 다 publish된 값을 받아오지 않을 수 있따.
+	// 이 while문은 그때 일부 들어온 거를 다 받는 거를 의미함 .
 	while (idx < sizeof(rxBuf) - 1 &&HAL_UART_Receive(ESP_UART, &ch, 1, 5) == HAL_OK)
 	{
 	      rxBuf[idx++] = ch;
