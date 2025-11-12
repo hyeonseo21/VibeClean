@@ -27,10 +27,6 @@ public class RobotOfflineChecker {
     public void checkOffline() {
         Status latest = statusRepository.findTopByOrderByTimeDesc();
         if (latest == null) {
-            statusRepository.deleteAll();
-            sensorRepository.deleteAll();// 꺼졌다고 판단하여 로그에 출력 및 db에 저장된 모든 값들을 삭제한다.
-            manualPowerRepository.deleteAll();
-            manualSpeedRepository.deleteAll();
             return; // 이미 초기 상태
         }
 
