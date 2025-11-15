@@ -1,3 +1,4 @@
+/*
 package com.Study.vibeclean.dto.service.mqtt;
 
 import com.Study.vibeclean.dto.service.mqtt.TelemetryHandler;
@@ -40,4 +41,4 @@ public class MqttService {
             log.error("Failed to publish MQTT message", e);
         }
     }
-}
+}*/

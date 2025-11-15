@@ -1,9 +1,9 @@
 package com.Study.vibeclean.domain.manual;
 
 import jakarta.persistence.*;
-import org.springframework.boot.autoconfigure.web.WebProperties;
 
 @Entity
+@Table(name = "manual_power")
 public class ManualPower {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,5 +18,7 @@ public class ManualPower {
         this.power = power;
     }
 
-
+    public String getPower() {
+        return power;
+    }
 }

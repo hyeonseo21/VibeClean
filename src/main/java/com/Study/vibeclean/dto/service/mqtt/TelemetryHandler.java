@@ -1,3 +1,4 @@
+/*
 package com.Study.vibeclean.dto.service.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,4 +42,4 @@ public class TelemetryHandler {
             log.error("Failed to handle telemetry payload: {}", payload, e);
         }
     }
-}
+}*/
