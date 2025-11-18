@@ -37,7 +37,9 @@ public class ManualController {
     @PostMapping("api/manual/direction")
     public void setMode(@RequestBody ManualDirectionRequest request){manualControlService.setDirection(request); }
 
-    @GetMapping("/api/manual/speed")
+
+
+/*    @GetMapping("/api/manual/speed")
     public ManualSpeedResponse getSpeed(){ return manualControlService.getSpeed();
     }
 
@@ -49,7 +51,7 @@ public class ManualController {
     public ManualModeResponse getMode(){return manualControlService.getMode();}
 
     @GetMapping("api/manual/direction")
-    public ManualDirectionResponse getDirection(){return manualControlService.getDirection();}
+    public ManualDirectionResponse getDirection(){return manualControlService.getDirection();}*/
 
 
 
