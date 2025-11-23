@@ -20,4 +20,6 @@ mqtt:
   telemetry-topic: vibeclean/robot1/telemetry
   power-topic: vibeclean/robot1/control/power
   speed-topic: vibeclean/robot1/control/speed
+  mode-topic: vibeclean/robot1/control/mode
+  direction-topic: vibeclean/robot1/control/direction
 
