@@ -75,7 +75,7 @@ public class ManualControlService {
         }
 
         //http용
-        //manualSpeedRepository.save(new ManualSpeed(manualSpeed.getFanSpeed()));
+        manualSpeedRepository.save(new ManualSpeed(manualSpeed.getFanSpeed()));
         // 수정하고자 하는 값을 DB에 저장함.
 
         String payload = "{ \"fanSpeed\": " + manualSpeed.getFanSpeed() + " }";
@@ -94,13 +94,13 @@ public class ManualControlService {
         if ("ON".equals(power)) {
             if (latest != null && "ON".equalsIgnoreCase(latest.getPower())) return;
             // ON 요청 → STM32로 전송 위한 DB저 장/ 근데 이제 이미 ON 상태라면 무시
-            //manualPowerRepository.save(new ManualPower(power)); http용
-            mqttService.publish(powerTopic, "{ \"power\": \"ON\" }");
+            manualPowerRepository.save(new ManualPower(power)); //http용
+            mqttService.publish(powerTopic, "{ \"power\": \"ON\" }"); //mqtt용
         } else if ("OFF".equals(power)) {
             if (latest == null) return;
             // 이미 꺼져있는데 off값이 들어온 경우라면 무시한다.
-            //manualPowerRepository.save(new ManualPower(power)); http용
-            mqttService.publish(powerTopic, "{ \"power\": \"OFF\" }");
+            manualPowerRepository.save(new ManualPower(power)); //http용
+            mqttService.publish(powerTopic, "{ \"power\": \"OFF\" }"); //mqtt용
         }
 
 
@@ -115,7 +115,7 @@ public class ManualControlService {
             return ;
         }//STM 전원 자체가 꺼져있거나, 아니면 이미 바꾸고자 FE에서 넘어온 모드 값이 이미 해당 상태면 무시한다
 
-        manualModeRepository.save(new ManualMode(request.getMode()));
+        manualModeRepository.save(new ManualMode(request.getMode())); //http용 + mqtt용
         //STM 전원이 켜져있고, mode가 현재 상태에서 다른 상태로 바꾸고자 하는 거면 DB에 저장한다.
 
         mqttService.publish(modeTopic, "{ \"mode\": \""+request.getMode()+ "\" }");
@@ -132,16 +132,16 @@ public class ManualControlService {
         } // 만약 FE에서 방향키를 눌렀는데 STM이 꺼져있는 상태이거나 아니면, 켜져는 있지만 자동 모드로 돌아가고 있다면 무시
 
         if (Objects.equals(request.getDirection(), "STOP")){ // 받은 direction이 STOP이라면, 사용자가 방향키를 누르다가 뗀 것을 의미함
-            manualDirectionRepository.deleteAll();  // 사용자가 방향키를 뗀다면, 해당 table을 모두 삭제해서 초기로 만들어준다.
-            return ;
+            //manualDirectionRepository.deleteAll();  // 사용자가 방향키를 뗀다면, 해당 table을 모두 삭제해서 초기로 만들어준다.
+            //return ;
         }
 
-        manualDirectionRepository.save(new ManualDirection(request.getDirection()));
+        manualDirectionRepository.save(new ManualDirection(request.getDirection())); //http용
         //STM이 켜져있는 상태이고, 또 manual모드인 경우에만, 또 사용자가 방향키를 누른 경우에(not 손 뗌) DB에 저장됨
 
         // 원래 이 코드랑 위에 STOP 코드는 http 용이라서 //치는 게 맞긴 한데...ㅣㅣ흠....걍...걍...냅둬
 
-        mqttService.publish(directionTopic, "{ \"direction\": \""+request.getDirection()+ "\" }");
+        mqttService.publish(directionTopic, "{ \"direction\": \""+request.getDirection()+ "\" }"); //mqtt용
 
 
     }

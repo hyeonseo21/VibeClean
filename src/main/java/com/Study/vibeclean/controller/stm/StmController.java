@@ -1,4 +1,3 @@
-/*
 package com.Study.vibeclean.controller.stm;
 
 import com.Study.vibeclean.dto.service.stm.StmService;
@@ -20,4 +19,3 @@ public class StmController {
         stmService.saveValue(request);
     }
 }
-*/

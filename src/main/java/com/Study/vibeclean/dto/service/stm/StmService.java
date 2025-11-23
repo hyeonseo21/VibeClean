@@ -1,4 +1,3 @@
-/*
 package com.Study.vibeclean.dto.service.stm;
 
 import com.Study.vibeclean.domain.manual.ManualMode;
@@ -31,4 +30,3 @@ public class StmService {
     }
 
 }
-*/

@@ -1,4 +1,3 @@
-/*
 package com.Study.vibeclean.dto.stm.request;
 
 import lombok.Data;
@@ -62,4 +61,3 @@ public class StmRequest {
 }
 
 
-*/
