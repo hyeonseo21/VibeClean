@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -31,6 +32,9 @@ public class StatsService {
         if (stats.isEmpty()){ // 만약 비어있다면 즉 아무 값도 없다면 이렇게 기본 값 리턴
             return new StatsResponse(new FloorDistribution(new ArrayList<>()),LocalDateTime.now(), LocalDateTime.now());
         }
+        /*else if (Objects.equals(statusFinal.getPower(), "OFF")){
+            return new StatsResponse(new FloorDistribution(new ArrayList<>()),LocalDateTime.now(), LocalDateTime.now());
+        }*/
 
         return new StatsResponse(new FloorDistribution(stats),statusInitial.getTime(),statusFinal.getTime());
     }

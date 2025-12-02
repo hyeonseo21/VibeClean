@@ -1,19 +1,24 @@
 package com.Study.vibeclean.dto.service.sensor;
 
 import com.Study.vibeclean.domain.sensor.Sensor;
+import com.Study.vibeclean.domain.status.Status;
 import com.Study.vibeclean.dto.repository.sensor.SensorRepository;
+import com.Study.vibeclean.dto.repository.status.StatusRepository;
 import com.Study.vibeclean.dto.sensor.request.SensorRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class SensorService {
     private SensorRepository sensorRepository;
+    private StatusRepository statusRepository;
 
-    public SensorService(SensorRepository sensorRepository) {
+    public SensorService(SensorRepository sensorRepository, StatusRepository statusRepository) {
         this.sensorRepository = sensorRepository;
+        this.statusRepository = statusRepository;
     }
 
     @Transactional
@@ -27,10 +32,14 @@ public class SensorService {
     @Transactional
     public Sensor getSensorValue(){
         Optional<Sensor> optionalSensor = sensorRepository.findTopByOrderByIdDesc();
+        Status status = statusRepository.findTopByOrderByTimeDesc();
         if (optionalSensor.isEmpty()) {
             //  DB가 비어있을 경우 내가 지정한 기본 Sensor 값 반환
             return new Sensor(0.0F, 0.0F, 0.0F);
         }
+       /* else if (Objects.equals(status.getPower(), "OFF")){
+            return new Sensor(0.0F, 0.0F, 0.0F);
+        }*/
         return optionalSensor.get();
 
     }

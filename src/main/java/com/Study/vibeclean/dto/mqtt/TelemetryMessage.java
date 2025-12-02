@@ -2,6 +2,8 @@ package com.Study.vibeclean.dto.mqtt;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class TelemetryMessage {
 
@@ -10,6 +12,7 @@ public class TelemetryMessage {
 
     private Position position;
     private SensorData sensor;
+    //private List<SensorData> sensor;
 
     @Data
     public static class Position {
@@ -59,4 +62,8 @@ public class TelemetryMessage {
     public SensorData getSensor() {
         return sensor;
     }
+
+   /* public List<SensorData> getSensor() {
+        return sensor;
+    }*/
 }

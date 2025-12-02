@@ -17,6 +17,7 @@ import com.Study.vibeclean.dto.repository.manual.ManualDirectionRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualModeRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualPowerRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualSpeedRepository;
+import com.Study.vibeclean.dto.repository.sensor.SensorBundleRepository;
 import com.Study.vibeclean.dto.repository.sensor.SensorRepository;
 import com.Study.vibeclean.dto.repository.status.StatusRepository;
 //import com.Study.vibeclean.dto.service.mqtt.MqttService;
@@ -39,6 +40,7 @@ public class ManualControlService {
     private final MqttService mqttService;
     private String power;
     private final SensorRepository sensorRepository;
+    private final SensorBundleRepository sensorBundleRepository;
     private final ManualModeRepository manualModeRepository;
     private final ManualDirectionRepository manualDirectionRepository;
 
@@ -46,12 +48,14 @@ public class ManualControlService {
     public void init (){
         statusRepository.deleteAll();
         sensorRepository.deleteAll();//맨 처음에 서버가 초기화된다면, DB 역시 기본 init상태로 만든다.
+        sensorBundleRepository.deleteAll();
         manualPowerRepository.deleteAll();
         manualSpeedRepository.deleteAll();
         manualDirectionRepository.deleteAll();
         manualModeRepository.deleteAll();
         manualModeRepository.save(new ManualMode("AUTO")); // 수동 조작을 할 때, mode를 다루는 경우, 기본 초기화 값 자체가 auto가 들어간 상태이므로,
         // 모든 행을 다 삭제한 후에, 기본 값인 AUTO를 넣어둔다.
+        manualPowerRepository.save(new ManualPower("ON"));
     }
 
     @Value("${mqtt.power-topic}")
