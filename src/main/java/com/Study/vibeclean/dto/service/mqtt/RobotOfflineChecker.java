@@ -2,11 +2,13 @@ package com.Study.vibeclean.dto.service.mqtt;
 
 import com.Study.vibeclean.domain.manual.ManualDirection;
 import com.Study.vibeclean.domain.manual.ManualMode;
+import com.Study.vibeclean.domain.manual.ManualPower;
 import com.Study.vibeclean.domain.status.Status;
 import com.Study.vibeclean.dto.repository.manual.ManualDirectionRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualModeRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualPowerRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualSpeedRepository;
+import com.Study.vibeclean.dto.repository.sensor.SensorBundleRepository;
 import com.Study.vibeclean.dto.repository.sensor.SensorRepository;
 import com.Study.vibeclean.dto.repository.status.StatusRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class RobotOfflineChecker {
     private final ManualPowerRepository manualPowerRepository;
     private final ManualModeRepository manualModeRepository;
     private final ManualDirectionRepository manualDirectionRepository;
+    private final SensorBundleRepository sensorBundleRepository;
 
     @Scheduled(fixedDelay = 1000) // 이거를 통해 스프링부트가 1초마다 반복 실행되게 만든다.
     public void checkOffline() {
@@ -42,12 +45,15 @@ public class RobotOfflineChecker {
             log.info("No telemetry for 3s → Robot OFF → clear tables");
             statusRepository.deleteAll();
             sensorRepository.deleteAll();// 꺼졌다고 판단하여 로그에 출력 및 db에 저장된 모든 값들을 삭제한다.
+            sensorBundleRepository.deleteAll();
             manualPowerRepository.deleteAll();
             manualSpeedRepository.deleteAll();
             manualDirectionRepository.deleteAll();
             manualModeRepository.deleteAll();
             manualModeRepository.save(new ManualMode("AUTO")); // 수동 조작을 할 때, mode를 다루는 경우, 기본 초기화 값 자체가 auto가 들어간 상태이므로,
             // 모든 행을 다 삭제한 후에, 기본 값인 AUTO를 넣어둔다.
+            manualPowerRepository.save(new ManualPower("ON"));
+            //59초가 지나면 기본 값으로 ON을 설정한다.
         }
     }
 }

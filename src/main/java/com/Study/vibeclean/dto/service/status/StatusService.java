@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -20,7 +21,7 @@ public class StatusService {
         this.repository = repository;
     }
 
-    @Transactional //postman에서 값을 전달하면 저장하는 기능
+    /*@Transactional //postman에서 값을 전달하면 저장하는 기능
     public void saveStatus(RobotStatusRequest request){
         int x = request.getCoordinate().getX();
         int y = request.getCoordinate().getY();
@@ -29,7 +30,7 @@ public class StatusService {
         // 이 코드는 내가 postman활용해서 임시로 DB에 저장할 때 사용했던 거라서 사용할 일 없기도 하고 DB 셋팅도 다르니까 패스
         //repository.save(new Status(request.getPower(),request.getCurrentFloor(),request.getFanSpeed(),x,y));
 
-    }
+    }*/
 
     @Transactional // 이 부분 짜는 거에서 살짝 막혔었다. postman을 활용해서 get으로 들어오면 아래의 상태 정보를 보내줌
     public RobotStatusResponse returnStatus(){
@@ -37,6 +38,9 @@ public class StatusService {
         if (latestStatus.isEmpty()){
             return new RobotStatusResponse("OFF",null,null,0,new ArrayList<>());
         }
+        /*else if(Objects.equals(latestStatus.get().getPower(), "OFF")){
+            return new RobotStatusResponse("OFF",null,null,0,new ArrayList<>());
+        }*/
         List<Coordinate> path= repository.findAllPathPoints();
 
         return new RobotStatusResponse(latestStatus.get().getPower(),latestStatus.get().getMode(), latestStatus.get().getCurrentFloor(),
