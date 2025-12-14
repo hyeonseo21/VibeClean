@@ -2,19 +2,19 @@ package com.Study.vibeclean.dto.status.request;
 // x,y좌표 값을 입력받기 위한 클래스
 
 public class Coordinate {
-    private int x;
-    private int y;
+    private float x;
+    private float y;
 
-    public Coordinate(int x, int y) {
-        this.y = y;
+    public Coordinate(float x, float y) {
         this.x = x;
+        this.y = y;
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 }

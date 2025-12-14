@@ -29,7 +29,8 @@ public class SensorController {
 
     @GetMapping("/api/robot/sensor")
     public Sensor getSensorValue(){
-        Sensor response=sensorService.getSensorValue();
+        //Sensor response=sensorService.getSensorValue();
+        Sensor response = sensorService.getAiSensorValue();
         return response;
     }
 

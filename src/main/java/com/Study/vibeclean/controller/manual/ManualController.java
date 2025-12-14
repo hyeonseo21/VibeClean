@@ -35,7 +35,7 @@ public class ManualController {
     public void setMode(@RequestBody ManualModeRequest request){manualControlService.setMode(request); }
 
     @PostMapping("api/manual/direction")
-    public void setMode(@RequestBody ManualDirectionRequest request){manualControlService.setDirection(request); }
+    public void setDirection(@RequestBody ManualDirectionRequest request){manualControlService.setDirection(request); }
 
 
 

@@ -1,9 +1,13 @@
 package com.Study.vibeclean.dto.service.status;
 
+import com.Study.vibeclean.domain.ai.Ai;
 import com.Study.vibeclean.domain.status.Status;
+import com.Study.vibeclean.dto.repository.ai.AiRepository;
+import com.Study.vibeclean.dto.repository.auto2d.Auto2DRepository;
 import com.Study.vibeclean.dto.repository.status.StatusRepository;
 import com.Study.vibeclean.dto.status.request.Coordinate;
 import com.Study.vibeclean.dto.status.request.RobotStatusRequest;
+import com.Study.vibeclean.dto.status.response.AiResponse;
 import com.Study.vibeclean.dto.status.response.RobotStatusResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +20,13 @@ import java.util.Optional;
 @Service
 public class StatusService {
     private StatusRepository repository;
+    private AiRepository aiRepository;
+    private Auto2DRepository auto2DRepository;
 
-    public StatusService(StatusRepository repository) {
+    public StatusService(StatusRepository repository, AiRepository aiRepository, Auto2DRepository auto2DRepository) {
         this.repository = repository;
+        this.aiRepository = aiRepository;
+        this.auto2DRepository = auto2DRepository;
     }
 
     /*@Transactional //postman에서 값을 전달하면 저장하는 기능
@@ -34,7 +42,9 @@ public class StatusService {
 
     @Transactional // 이 부분 짜는 거에서 살짝 막혔었다. postman을 활용해서 get으로 들어오면 아래의 상태 정보를 보내줌
     public RobotStatusResponse returnStatus(){
+        // 보드 1개 버전
         Optional<Status> latestStatus= repository.findTopByOrderByIdDesc();//가장 최신의 값을 가져옴.
+        //보드 1개 버전
         if (latestStatus.isEmpty()){
             return new RobotStatusResponse("OFF",null,null,0,new ArrayList<>());
         }
@@ -45,6 +55,24 @@ public class StatusService {
 
         return new RobotStatusResponse(latestStatus.get().getPower(),latestStatus.get().getMode(), latestStatus.get().getCurrentFloor(),
                 latestStatus.get().getFanSpeed(),path);
+    }
+
+    @Transactional
+    public AiResponse returnAiStatus(){
+        // 보드 2개 버전
+        Optional<Ai> ChangedlatestStatus= aiRepository.findTopByOrderByIdDesc();//가장 최신의 값을 가져옴
+
+        // 보드 2개 버전. 만약 비어있다면 즉 off상태로 판단한다면 기본 값으로 리턴한다.
+        if (ChangedlatestStatus.isEmpty()){
+            return new AiResponse("OFF",null,null,0,new ArrayList<>());
+
+        }
+
+        List<Coordinate> path= auto2DRepository.findAllPathPoints();
+
+        return new AiResponse(ChangedlatestStatus.get().getPower(),ChangedlatestStatus.get().getMode(),
+                ChangedlatestStatus.get().getCurrent_floor(),ChangedlatestStatus.get().getFan_speed(),path);
+
     }
 
 }
