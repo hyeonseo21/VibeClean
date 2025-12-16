@@ -19,6 +19,7 @@ public class MqttService {
     private final TelemetryHandler telemetryHandler;
     private final AiHandler aiHandler;
     private final Auto2DHandler auto2DHandler;
+    private final Ai2DHandler ai2DHandler;
 
     @Value("${mqtt.telemetry-topic}")
     private String telemetryTopic;
@@ -28,6 +29,9 @@ public class MqttService {
 
     @Value("${mqtt.auto2D-topic}")
     private String auto2DTopic;
+
+    @Value("${mqtt.ai2D-topic}")
+    private String ai2DTopic;
 
     @PostConstruct // 이 어노테이션은 완전히 초기화 된 후 한 번 무조건 실행하는 것을 의미한다.
     public void init() throws MqttException {
@@ -50,6 +54,13 @@ public class MqttService {
             String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
             log.debug("Received MQTT: topic={}, payload={}", topic, payload); // 어떤 토픽에서 구독받은 건지 그리고 내용 출력
             auto2DHandler.Auto2DTelemetry(payload); // 받은 내용을 핸들러로 넘겨서 DB에 저장한다.
+        });
+
+        // STM32 → 서버: auto2D 구독
+        mqttClient.subscribe(ai2DTopic, (topic, message) -> {
+            String payload = new String(message.getPayload(), StandardCharsets.UTF_8);
+            log.debug("Received MQTT: topic={}, payload={}", topic, payload); // 어떤 토픽에서 구독받은 건지 그리고 내용 출력
+            ai2DHandler.Ai2DTelemetry(payload); // 받은 내용을 핸들러로 넘겨서 DB에 저장한다.
         });
     }
 
