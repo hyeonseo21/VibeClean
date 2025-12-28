@@ -1,5 +1,6 @@
 package com.Study.vibeclean.dto.service.manual;
 
+import com.Study.vibeclean.domain.ai.Ai;
 import com.Study.vibeclean.domain.manual.ManualDirection;
 import com.Study.vibeclean.domain.manual.ManualMode;
 import com.Study.vibeclean.domain.manual.ManualPower;
@@ -13,6 +14,8 @@ import com.Study.vibeclean.dto.manual.response.ManualDirectionResponse;
 import com.Study.vibeclean.dto.manual.response.ManualModeResponse;
 import com.Study.vibeclean.dto.manual.response.ManualPowerResponse;
 import com.Study.vibeclean.dto.manual.response.ManualSpeedResponse;
+import com.Study.vibeclean.dto.repository.ai.AiRepository;
+import com.Study.vibeclean.dto.repository.auto2d.Auto2DRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualDirectionRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualModeRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualPowerRepository;
@@ -43,6 +46,8 @@ public class ManualControlService {
     private final SensorBundleRepository sensorBundleRepository;
     private final ManualModeRepository manualModeRepository;
     private final ManualDirectionRepository manualDirectionRepository;
+    private final AiRepository aiRepository;
+    private final Auto2DRepository auto2DRepository;
 
     @PostConstruct
     public void init (){
@@ -56,6 +61,8 @@ public class ManualControlService {
         manualModeRepository.save(new ManualMode("AUTO")); // 수동 조작을 할 때, mode를 다루는 경우, 기본 초기화 값 자체가 auto가 들어간 상태이므로,
         // 모든 행을 다 삭제한 후에, 기본 값인 AUTO를 넣어둔다.
         manualPowerRepository.save(new ManualPower("ON"));
+        aiRepository.deleteAll();
+        auto2DRepository.deleteAll();
     }
 
     @Value("${mqtt.power-topic}")
@@ -73,7 +80,7 @@ public class ManualControlService {
     // 수동조작 speed 들어온 값 DB 저장하는 메서드
     @Transactional
     public void setSpeed(ManualSpeedRequest manualSpeed){
-        Status latest = statusRepository.findTopByOrderByTimeDesc();
+        Ai latest = aiRepository.findTopByOrderByTimeDesc();
         if (latest == null || !"ON".equalsIgnoreCase(latest.getPower())) {
             return; // 오프라인 또는 OFF → 무시
         }
@@ -93,7 +100,7 @@ public class ManualControlService {
     public void setPower(ManualPowerRequest manualPower){
         power=manualPower.getPower();
         power = power.toUpperCase();
-        Status latest = statusRepository.findTopByOrderByTimeDesc();
+        Ai latest = aiRepository.findTopByOrderByTimeDesc();
 
         if ("ON".equals(power)) {
             if (latest != null && "ON".equalsIgnoreCase(latest.getPower())) return;

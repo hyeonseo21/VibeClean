@@ -1,9 +1,12 @@
 package com.Study.vibeclean.dto.service.mqtt;
 
+import com.Study.vibeclean.domain.ai.Ai;
 import com.Study.vibeclean.domain.manual.ManualDirection;
 import com.Study.vibeclean.domain.manual.ManualMode;
 import com.Study.vibeclean.domain.manual.ManualPower;
 import com.Study.vibeclean.domain.status.Status;
+import com.Study.vibeclean.dto.repository.ai.AiRepository;
+import com.Study.vibeclean.dto.repository.auto2d.Auto2DRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualDirectionRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualModeRepository;
 import com.Study.vibeclean.dto.repository.manual.ManualPowerRepository;
@@ -31,16 +34,18 @@ public class RobotOfflineChecker {
     private final ManualModeRepository manualModeRepository;
     private final ManualDirectionRepository manualDirectionRepository;
     private final SensorBundleRepository sensorBundleRepository;
+    private final AiRepository aiRepository;
+    private final Auto2DRepository auto2DRepository;
 
     @Scheduled(fixedDelay = 1000) // 이거를 통해 스프링부트가 1초마다 반복 실행되게 만든다.
     public void checkOffline() {
-        Status latest = statusRepository.findTopByOrderByTimeDesc();
+        Ai latest = aiRepository.findTopByOrderByTimeDesc();
         if (latest == null) {
             return; // 이미 초기 상태
         }
 
         LocalDateTime now = LocalDateTime.now();
-        if (latest.getTime().isBefore(now.minusSeconds(59))) { // 가장 최근에 status에 저장된 시간과 현재 시간이 3초가 넘으면 일어나는 일
+        if (latest.getTime().isBefore(now.minusSeconds(180))) { // 가장 최근에 status에 저장된 시간과 현재 시간이 3초가 넘으면 일어나는 일
             // 지금은 테스트 단계라서 59초로 설정했지만, 실제로 할 때는 3초나 더 간격 작게 해서 고고링
             log.info("No telemetry for 3s → Robot OFF → clear tables");
             statusRepository.deleteAll();
@@ -54,6 +59,9 @@ public class RobotOfflineChecker {
             // 모든 행을 다 삭제한 후에, 기본 값인 AUTO를 넣어둔다.
             manualPowerRepository.save(new ManualPower("ON"));
             //59초가 지나면 기본 값으로 ON을 설정한다.
+            aiRepository.deleteAll();
+            auto2DRepository.deleteAll();
+
         }
     }
 }

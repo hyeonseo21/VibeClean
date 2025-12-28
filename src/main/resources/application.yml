@@ -18,6 +18,10 @@ mqtt:
   broker-url: tcp://localhost:1883
   client-id: vibeclean-server
   telemetry-topic: vibeclean/robot1/telemetry
+  ai-topic: vibeclean/robot1/ai
+  auto2D-topic: vibeclean/robot1/auto2D
+  ai2D-topic: vibeclean/robot1/ai2D
+
   power-topic: vibeclean/robot1/control/power
   speed-topic: vibeclean/robot1/control/speed
   mode-topic: vibeclean/robot1/control/mode

@@ -1,7 +1,9 @@
 package com.Study.vibeclean.dto.service.sensor;
 
+import com.Study.vibeclean.domain.ai.Ai;
 import com.Study.vibeclean.domain.sensor.Sensor;
 import com.Study.vibeclean.domain.status.Status;
+import com.Study.vibeclean.dto.repository.ai.AiRepository;
 import com.Study.vibeclean.dto.repository.sensor.SensorRepository;
 import com.Study.vibeclean.dto.repository.status.StatusRepository;
 import com.Study.vibeclean.dto.sensor.request.SensorRequest;
@@ -15,10 +17,12 @@ import java.util.Optional;
 public class SensorService {
     private SensorRepository sensorRepository;
     private StatusRepository statusRepository;
+    private AiRepository aiRepository;
 
-    public SensorService(SensorRepository sensorRepository, StatusRepository statusRepository) {
+    public SensorService(SensorRepository sensorRepository, StatusRepository statusRepository, AiRepository aiRepository) {
         this.sensorRepository = sensorRepository;
         this.statusRepository = statusRepository;
+        this.aiRepository = aiRepository;
     }
 
     @Transactional
@@ -28,6 +32,7 @@ public class SensorService {
 
 
     }
+
 
     @Transactional
     public Sensor getSensorValue(){
@@ -42,5 +47,17 @@ public class SensorService {
         }*/
         return optionalSensor.get();
 
+    }
+
+    @Transactional
+    public Sensor getAiSensorValue(){
+        Optional<Ai> optionalAiSensor = aiRepository.findTopByOrderByIdDesc();
+        Ai ai= aiRepository.findTopByOrderByTimeDesc();
+        if(optionalAiSensor.isEmpty()){
+            return new Sensor(0.0F, 0.0F, 0.0F);
+        }
+
+        return new Sensor(optionalAiSensor.get().getX(),optionalAiSensor.get().getY(),
+                optionalAiSensor.get().getZ());
     }
 }

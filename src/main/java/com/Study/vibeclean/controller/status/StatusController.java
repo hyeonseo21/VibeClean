@@ -3,6 +3,7 @@ package com.Study.vibeclean.controller.status;
 import com.Study.vibeclean.dto.service.manual.ManualControlService;
 import com.Study.vibeclean.dto.service.status.StatusService;
 import com.Study.vibeclean.dto.status.request.RobotStatusRequest;
+import com.Study.vibeclean.dto.status.response.AiResponse;
 import com.Study.vibeclean.dto.status.response.RobotStatusResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +26,10 @@ public class StatusController {
     //}
 
     @GetMapping("/api/robot/status")
-    public RobotStatusResponse SendRobotStatus(){
-        RobotStatusResponse responses=statusService.returnStatus();
+    public AiResponse SendRobotStatus(){
+        //RobotStatusResponse responses=statusService.returnStatus();
+
+        AiResponse responses = statusService.returnAiStatus();
         return responses;
 
     }
